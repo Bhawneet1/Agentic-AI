@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSA Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            /* Slate 900 */
+            --chat-bg: #1e293b;
+            /* Slate 800 */
+            --primary: #3b82f6;
+            /* Blue 500 */
+            --primary-hover: #2563eb;
+            /* Blue 600 */
+            --text-primary: #f8fafc;
+            /* Slate 50 */
+            --text-secondary: #94a3b8;
+            /* Slate 400 */
+            --user-msg-bg: #3b82f6;
+            --ai-msg-bg: #334155;
+            /* Slate 700 */
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--chat-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: rgba(30, 41, 59, 0.95);
+        }
+
+        header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background-color: var(--user-msg-bg);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-message {
+            align-self: flex-start;
+            background-color: var(--ai-msg-bg);
+            color: var(--text-primary);
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .message strong {
+            font-weight: 600;
+            color: #60a5fa;
+        }
+
+        .message pre {
+            background: #0f172a;
+            padding: 10px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            margin-top: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+            background-color: var(--chat-bg);
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 14px 16px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        button {
+            padding: 0 24px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background-color: var(--text-secondary);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .typing-indicator {
+            display: none;
+            /* Hidden by default */
+            gap: 4px;
+            padding: 12px 16px;
+            background: var(--ai-msg-bg);
+            border-radius: 12px;
+            width: fit-content;
+            align-self: flex-start;
+            border: 1px solid var(--border-color);
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--chat-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                style="color: #60a5fa;">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+            <h1>DSA Assistant</h1>
+        </header>
+
+        <div class="chat-area" id="chatArea">
+            <div class="message ai-message">
+                Hello! I am your DSA Assistant. Ask me anything about Data Structures and Algorithms.
+            </div>
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Ask about arrays, linked lists, trees..." autocomplete="off">
+            <button id="sendBtn">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = "AIzaSyDavLGkdASFSV3QOh88e-1ovvlwMKpKiHM";
+        // Using gemini-2.5-flash-lite as requested
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=AIzaSyDavLGkdASFSV3QOh88e-1ovvlwMKpKiHM`;
+
+        // System Instruction from the original request
+        const SYSTEM_INSTRUCTION = `You are a Data Structures and Algorithms instructor. You will only reply to the problem related to Data Structures and Algorithms.You have to solve query of user in simplest way. If user ask any question which is not related to Data Structures and Algorithms, reply him rudely Example: If user asks How are you
+      you will reply : You dumb ask me some sensible question 
+      like this message you can reply anything more rudely not same everytime use different rude answer
+
+      You have to reply him rudely if question is not related to data structures and algorithms
+      else reply him politely and with simple explanation.`;
+
+        const chatArea = document.getElementById('chatArea');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        // Handle Click
+        sendBtn.addEventListener('click', sendMessage);
+
+        // Handle Enter key
+        userInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function addMessage(text, isUser) {
+            const div = document.createElement('div');
+            div.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+
+            // Very basic formatting
+            if (!isUser) {
+                let formattedText = text
+                    .replace(/```([\s\S]*?)```/g, '<pre>$1</pre>') // Code blocks
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold
+                    .replace(/\n/g, '<br>'); // Newlines
+                div.innerHTML = formattedText;
+            } else {
+                div.textContent = text;
+            }
+
+            // Append before typing indicator
+            chatArea.insertBefore(div, typingIndicator);
+
+            // Auto scroll to bottom
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            // 1. Add User Message
+            addMessage(text, true);
+
+            // 2. Clear Input & Disable UI
+            userInput.value = '';
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+
+            // 3. Show Typing Indicator
+            typingIndicator.style.display = 'flex';
+            chatArea.scrollTop = chatArea.scrollHeight;
+
+            try {
+                // 4. Construct Request Body
+                // NOTE: The structure for system_instruction might vary slightly between v1 and v1beta or specific models,
+                // but typical structure for generateContent with system_instruction is as follows:
+                const requestBody = {
+                    contents: [{
+                        parts: [{ text: text }]
+                    }],
+                    system_instruction: {
+                        parts: [{ text: SYSTEM_INSTRUCTION }]
+                    }
+                };
+
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API Error: ${response.status} - ${errorText}`);
+                }
+
+                const data = await response.json();
+
+                // 5. Extract Reply
+                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (aiText) {
+                    addMessage(aiText, false);
+                } else {
+                    addMessage("System: Received an empty response from the AI.", false);
+                }
+
+            } catch (error) {
+                console.error("Error:", error);
+                addMessage(`Error: ${error.message}`, false);
+            } finally {
+                // 6. Reset UI
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                typingIndicator.style.display = 'none';
+                userInput.focus();
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+        }
+    </script>
+
+</body>
+
+</html>

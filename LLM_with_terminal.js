@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import readlineSync from 'readline-sync';
 // The client gets the API key from the environment variable `GEMINI_API_KEY`.
 
-const ai = new GoogleGenAI({apiKey:"AIzaSyDavLGkdASFSV3QOh88e-1ovvlwMKpKiHM"});
+const ai = new GoogleGenAI({apiKey:""});
 
 const History = []
 async function chatting(userProblem) {
@@ -30,5 +30,6 @@ async function main() {
 
     //agar ham main ko call na kare to memory release ho jaegi aur context chla jaega, isliye main ko call karna jaruri hai taki chat chalti rahe aur context bhi bana rahe.
 }
+
 
 main();

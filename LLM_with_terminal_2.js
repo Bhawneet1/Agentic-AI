@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({apiKey:"AIzaSyDavLGkdASFSV3QOh88e-1ovvlwMKpKiHM"});
+const ai = new GoogleGenAI({apiKey:""});
 
 async function main() {
   const chat = ai.chats.create({
@@ -33,5 +33,6 @@ async function main() {
     console.log("_".repeat(80));
   }
 }
+
 
 await main();

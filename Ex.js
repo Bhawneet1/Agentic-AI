@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import readlineSync from 'readline-sync';
 
-const ai = new GoogleGenAI({apiKey:"AIzaSyAGsBXZGOLkd3U0I6Pbs8tyGmX7ur7RYbo"});
+const ai = new GoogleGenAI({apiKey:""});
 
 const History = []
 async function chatting(userProblem) {
@@ -51,5 +51,6 @@ async function main() {
     main();
    
 }
+
 
 main();
